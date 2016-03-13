@@ -1,5 +1,9 @@
 /*
- * The shell of the class, to be completed as part of CSC115 Assignment 4 : Patient Location.
+ * Name:      Jason Donald
+ * ID:        V00861539
+ * Date:      2006-03-13
+ * Filename:  BinarySearchTree.java
+ * Details:   CSC115 Assignment 4
  */
 
 import java.awt.List;
@@ -8,21 +12,9 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
-/*
- * NOTE TO STUDENT:
- * Complete this class as per the BinarySearchTree.html specification document.
- * Fill in any of the parts that have the comment:
- *	/******* COMPLETE *******
- * Do not change method headers or code that has been supplied.
- * Write as many methods as you need to make the code simple and easy to understand.
- * All methods must be properly commented.
- * Delete all messages to you, including this one, before submitting.
- */
-
 public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 	private E tempDelete = null;
-	private static final int TEMP_TRIES = 1000;  //to check if delete(E) works
-	// the root is inherited from BinaryTree.
+	private static final int TEMP_TRIES = 100;  //to check if delete(E) works
 
 	/**
 	 * Create an empty BinarySearchTree.
@@ -57,11 +49,17 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		}
 	}
 
+	/**
+	 * Finds the item that is equivalent to the key and removes it, 
+	 * if it's in the tree.
+	 * @param key The item that is equivalent to the item we are looking for. 
+	 *			  Equality is determined by the equals method of the item.
+	 */
 	public void delete(E key){
 		tempDelete = key;
 		try{
 			if(root != null){
-				root = deleteRec(root, key);
+				root = remove(root, key);
 			} else {
 				//tree has no elements
 			}
@@ -70,19 +68,20 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		}
 	}
 	
-	public TreeNode<E> deleteRec(TreeNode<E> branch, E key) 
+	//recursive call to delete a node.
+	private TreeNode<E> remove(TreeNode<E> branch, E key) 
 			throws NullPointerException{
 		
 		int compareTo = key.compareTo(branch.item);
 		
 		if(compareTo < 0){
-			branch.left = deleteRec(branch.left, key);
+			branch.left = remove(branch.left, key);
 		} else if(compareTo > 0){
-			branch.right = deleteRec(branch.right, key);
-		} else if(compareTo == 0) { //if it's the one to erase,
+			branch.right = remove(branch.right, key);
+		} else if(key.equals(branch.item)) { //if it's the one to erase,
 			size--;
 
-			if(isFull(branch)){
+			if(isFull(branch)){ //if proud parent of two children
 				return removeFromFull(branch);
 			} else {
 				return removeFromPart(branch);
@@ -97,49 +96,50 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 
 		//dont really give a crap if 'remove' has no children
 		if(remove.left != null){
-			return remove.left;
+			return remove.left; //left has a kid
 		} else { 
-			return remove.right;
+			return remove.right; //right could be holding a child or null.
 		}
 	}
 
+	//says whether node is the parent of two wonderful kids or not
 	private boolean isFull(TreeNode<E> node){
 		if(node.left != null && node.right != null) return true;
 		
 		return false;
 	}
 	
-	//if both branches are full
+	//Both branches are full
 	private TreeNode<E> removeFromFull(TreeNode<E> remove){
 		TreeNode<E>  parent = remove;
 		TreeNode<E>  move = parent.right;
 		
+		//get the minimal value of the right subtree
 		while(move.left != null){
 			parent = move;
 			move = move.left;
 		}
 		
+		//if was already at the minimal value,
 		if(parent != remove){
-			parent.left = move.right; //remove 'move' and re-attach tree if there is more of a tree there			
+			parent.left = move.right; //remove 'move' and re-attach tree if 
+									  //there is more of a tree there			
 
+			//replace removed branch
 			move.right = remove.right;
 		}
 		
 		//replace removed branch
 		move.left = remove.left;
-
-		
-		
 		
 		return move;
 	}
 
-/*
- * NOTE TO STUDENT.
- * This recursive method is the one that does the work
- * of traversing the tree in order and placing items
- * into the list.
- */
+	/*
+	 * This recursive method is the one that does the work
+	 * of traversing the tree in order and placing items
+	 * into the list.
+	 */
 	private void collectInOrder(ArrayList<E> list, TreeNode<E> node) {
 		if(node.left != null){
 			collectInOrder(list, node.left);
@@ -152,16 +152,22 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		}
  	}
 
+	/**
+	 * Inserts a new item into the tree, maintaining its order. If the item 
+	 * already exists in the tree, nothing happens.
+	 * @param item The newest item.
+	 */
 	public void insert(E item){
 		if(root == null){
 			root = new TreeNode(item);
 			size++;
 		} else {
-			insert(item, root);
+			add(item, root);
 		}
 	}
 	
-	private void insert(Comparable item, TreeNode parent){
+	//insert(E)'s recursive call
+	private void add(Comparable item, TreeNode<E> parent){
 		int parentCompare = item.compareTo(parent.item);
 		
 		if(parentCompare < 0){
@@ -169,22 +175,43 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 				parent.left = new TreeNode(item);
 				size++;
 			} else{
-				insert(item, parent.left);
+				add(item, parent.left);
 			}
 		} else if(parentCompare > 0){
 			if(parent.right == null){
 				parent.right = new TreeNode(item);
 				size++;
 			} else{
-				insert(item, parent.right);
+				add(item, parent.right);
 			}
 		}
 		
 		//otherwise, get out of here.  its the same.
 	}
 	
-	
+	/**
+	 * Looks for the item in the tree that is equivalent to the key.
+	 * @param key The item that is equivalent to the item we are looking for. 
+	 * Equality is determined by the equals method of the item.
+	 * @return The item if it's in the tree, null if it is not.
+	 */
 	public E retrieve(E key){
+		return get(root, key);
+	}
+
+	//retrieves recursive call
+	private E get(TreeNode<E> node, E key){
+		if(key.equals(node.item)){
+			return node.item;
+		}
+		
+		if(key.compareTo(node.item) < 0 && node.left != null){
+			return get(node.left, key);
+		}
+		if(key.compareTo(node.item) > 0 && node.right != null){
+			return get(node.right, key);
+		}
+		
 		return null;
 	}
 	
@@ -202,12 +229,7 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		tree.insert(p4);
 		tree.insert(p3);
 		tree.insert(p2);
-//		ArrayList<PatientLocation> list  = tree.inOrder();
-//		System.out.println(list);
 
-		// draw the tree in its current state:
-//		DrawableBTree<PatientLocation> dbt = new DrawableBTree<PatientLocation>(tree);
-//		dbt.showFrame();
 		tree.delete(p4);
 		
 		ArrayList<PatientLocation> ordered = tree.inOrder();
@@ -259,9 +281,22 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		
 		DrawableBTree<Integer> dbt = new DrawableBTree<Integer>(tree2);
 		dbt.showFrame();
+		
+		System.out.println("Tree height:  " + tree2.height());
+		
+		int got = 0;
+		if(got == delete){
+			got = 1;
+		}
+		
+		if(tree2.retrieve(delete) != null && tree2.retrieve(got) != delete){
+			System.out.println("Error in retrieve().");
+		}
 
 	}
 	
+	//run through creating, filling and deleting a node.  Check if the right 
+	//node got removed
 	private static boolean isDeleted(){
 		ArrayList<Integer> arrayList = new ArrayList<>();
 		Integer delete = mixInts(arrayList, getInts());
@@ -271,12 +306,8 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		for(Integer integer : arrayList){
 			tree.insert(integer);
 		}
-//DrawableBTree<PatientLocation> dbt = new DrawableBTree<PatientLocation>(tree);
-//dbt.showFrame();
 
 		tree.delete(delete); //delete the random entry
-//DrawableBTree<PatientLocation> dbt2 = new DrawableBTree<PatientLocation>(tree);
-//dbt2.showFrame();
 		
 		ArrayList<Integer> numsList = tree.inOrder();
 		
@@ -302,6 +333,7 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		return true;
 	}
 	
+	//get array of incrementing values
 	private static int[] getInts(){
 		int[] ints = new int[TEMP_TRIES];
 		for(int index=0; index<ints.length; index++){
@@ -311,6 +343,8 @@ public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 		return ints;
 	}
 	
+	//mix up ints, plop them in an empty list, and return a 
+	//random value to delete
 	private static Integer mixInts(ArrayList<Integer> empty, int[] ints){
 		Random random = new Random();
 		

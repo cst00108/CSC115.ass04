@@ -1,24 +1,12 @@
 /*
- * The shell of the class, to be completed as part of CSC115 Assignment 4 : Patient Location.
- */
-
-
-/*
- * NOTE TO STUDENT:
- * Complete this class as per the BinaryTree.html specification document.
- * Fill in any of the parts that have the comment:
- *	/******* COMPLETE *******
- * Do not change method headers or code that has been supplied.
- * Write as many methods as you need to make the code simple and easy to understand.
- * All methods must be properly commented.
- * Delete all messages to you, including this one, before submtting.
+ * Name:      Jason Donald
+ * ID:        V00861539
+ * Date:      2006-03-13
+ * Filename:  BinaryTree.java
+ * Details:   CSC115 Assignment 4
  */
  
 public class BinaryTree<E> {
-
-	/* The root is inherited by any subclass
-	 * so it must be protected instead of private.
-	 */
 	protected TreeNode<E> root;
 	protected int size = 0;
 
@@ -44,31 +32,51 @@ public class BinaryTree<E> {
 		return root;
 	}
 
+	/**
+	 * 
+	 * @return The height of the tree. The textbook's definition of the height 
+	 * is the maximum number of nodes from the root to a leaf node. The height 
+	 * of an empty tree is therefore equal to 0.
+	 */
 	public int height(){
 		if(isEmpty()){
 			return 0;
 		}
 		
-		return getDepth(root, 0, 0);
+		return getDepth(root);
 	}
-	
-	private int getDepth(TreeNode<E> node, int highest, int level){
-		if(level > highest){
-			highest = level;
-		}
 
-		
+	//recurse to get the height
+	private int getDepth(TreeNode<E> node){
+		int leftDepth = 0;
+		int rightDepth = 0;
+				
 		if(node.left != null){
-			getDepth(node.left, highest, level+1);
+				leftDepth = getDepth(node.left);
 		}
-
-		right
+		
+		if(node.right != null){
+			rightDepth = getDepth(node.right);
+		}
+		
+		if(leftDepth > rightDepth){
+			return ++leftDepth;
+		}
+		
+		return ++rightDepth;
 	}
 	
+	/**
+	 * 
+	 * @return True if the tree is empty.
+	 */
 	public boolean isEmpty(){
 		return root == null;
 	}
 	
+	/**
+	 * Removes all the nodes from the tree, making it empty.
+	 */
 	public void makeEmpty(){
 		root = null;
 		size = 0;
